@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Dashboard</title>
+    <link rel="stylesheet" href="./main.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</head>
+<body class="light-mode">
+    <!-- Navigation Bar -->
+    <div class="nav-bar">
+        <div class="theme-switch-wrapper">
+            <label class="theme-switch" for="checkbox">
+                <input type="checkbox" id="checkbox" />
+                <div class="slider round">
+                    <div class="slider-icons">
+                        <span class="moon">🌙</span>
+                        <span class="sun">☀️</span>
+                    </div>
+                </div>
+            </label>
+        </div>
+        <div class="search-bar">
+            <input type="text" placeholder="Search for your preferred city..." id="citySearch">
+        </div>
+        <button class="location-btn" id="currentLocation">Current Location</button>
+    </div>
+
+    <!-- Main Weather Grid -->
+    <div class="weather-grid">
+        <!-- Time and Location Card -->
+        <div class="card time-location-card">
+            <h1 class="city-name" id="cityName">Athens</h1>
+            <div class="time" id="currentTime">09:03</div>
+            <div class="date" id="currentDate">Thursday, 31 Aug</div>
+        </div>
+
+        <!-- Current Weather Card -->
+        <div class="card current-weather">
+            <div>
+                <div class="temperature" id="currentTemp">24°C</div>
+                <div id="feelsLike">Feels like: 22°C</div>
+                <div class="sun-times">
+                  
+                    <div id="sunrise">  <i class="bi bi-sunrise-fill"></i>  Sunrise: 06:37 AM</div>
+
+                    <div id="sunset">  <i class="bi bi-sunset-fill"></i>    Sunset: 20:37 AM</div>
+                </div>
+            </div>
+            <div class="weather-info">
+                <div class="weather-item">
+                    <i class="bi bi-water"></i>
+                    <div>Humidity</div>
+                    <div id="humidity">41%</div>
+                </div>
+                <div class="weather-item">
+                    <div><i class="bi bi-wind"></i></div>
+                    <div>Wind Speed</div>
+                    <div id="windSpeed">4.09m/sec</div>
+                </div>
+                <div class="weather-item">
+                    <i class="bi bi-chevron-bar-down"></i>
+                    <div>Pressure</div>
+                    <div id="pressure">997hPa</div>
+                </div>
+                <div class="weather-item">
+                    <i class="bi bi-cloud"></i>
+                    <div>Clouds</div>
+                    <div id="clouds">8</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Forecast Sections -->
+    <div class="weather-grid">
+        <!-- 5 Days Forecast -->
+        <div class="forecast-section-graph">
+            <canvas id="myChart" width="800" height="400"></canvas>
+        </div>
+
+        <!-- Hourly Forecast -->
+        <div class="forecast-section">
+            <h2 class="forecast-title">Hourly Forecast</h2>
+            <div class="hourly-forecast" id="hourlyForecast">
+                <!-- Hourly forecast items will be added dynamically -->
+                <div class="hour-item">
+                    <div>12:00</div>
+                    <div>26°C</div>
+                    <div>3km/h</div>
+                </div>
+            </div>
+        </div>
+    </div>
+   <script  type="module"  src="./main.js"></script>
+ 
+</body>
+</html>
