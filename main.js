@@ -109,23 +109,35 @@ function getgraph(hourlyValueHolder) {
 
     let timelabel = [];
     let templabel = [];
+    let windspeedlabel = [];
 
     hourlyValueHolder.forEach((data) => {
         timelabel.push(data.time);
         templabel.push(data.temp);
+        windspeedlabel.push(data.windspeed);
     });
 
     let dataGraph = {
         labels: timelabel,
-        datasets: [{
-            label: "Temperature",
-            data: templabel,
-            fill: false,
-            borderColor: "rgb(75, 192, 192)",
-            tension: 0.1
-        }]
+        datasets: [
+            {
+                label: "Windspeed",
+                data: windspeedlabel,
+                type: 'line',
+                borderColor: "rgb(255, 99, 132)",
+                tension: 0.1,
+                yAxisID: 'y'
+            },
+            {
+                label: "Temperature",
+               
+                data: templabel,
+                type: 'bar',
+                backgroundColor:" rgb(60,60,60) ",
+                yAxisID: 'y1'
+            }
+        ]
     };
-
     // Store chart instance globally
     window.myChartInstance = new Chart(ctx, {
         type: "line",
@@ -134,15 +146,32 @@ function getgraph(hourlyValueHolder) {
             responsive: true,
             scales: {
                 y: {
-                    beginAtZero: true,
+                    type: 'linear',
+                    display: true,
+                    position: 'left',
                     title: {
                         display: true,
-                        text: 'Temperature (°C)'
+                          text: 'Windspeed (km/h)'
+                      
+                    }
+                },
+                y1: {
+                    type: 'linear',
+                    display: true,
+                    position: 'right',
+                    title: {
+                        display: true,
+                          text: 'Temperature (°C)'
+                      
+                    },
+                    grid: {
+                        drawOnChartArea: false
                     }
                 }
             }
         }
     });
+
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------
@@ -263,9 +292,93 @@ fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${cityName}&limit=${limit}
 }
     //------------------------------------------------------------------------------------------------------------------------------------
 
+
+    //Current location 
+
+
+    function getCurrentLocation() {
+        // Check if geolocation is supported
+        if (navigator.geolocation) {
+            document.getElementById('cityName').innerText = 'Detecting location...';
+            
+            navigator.geolocation.getCurrentPosition(
+                // Success callback
+                (position) => {
+                    lat = position.coords.latitude;
+                    lon = position.coords.longitude;
+                    
+                    // Use the reverse geocoding API
+                    fetch(`https://api.geoapify.com/v1/geocode/reverse?lat=${lat}&lon=${lon}&format=json&apiKey=${api2}`)
+                        .then(resp => resp.json())
+                        .then((result) => {
+                            if (result.results && result.results.length > 0) {
+                                const locationData = result.results[0];
+                                
+                                // Get timezone from the response
+                                timezone = locationData.timezone.name;
+                                
+                                // Get city name, with fallbacks
+                                cityName = locationData.city || locationData.county || locationData.state;
+                                
+                                // Calculate current time and date
+                                const currentTime = calculateTime(timezone)[0];
+                                const currentDate = calculateTime(timezone)[1];
+                                
+                                // Update UI
+                                document.getElementById('cityName').innerText = cityName;
+                                document.getElementById('currentTime').innerText = currentTime;
+                                document.getElementById('currentDate').innerText = currentDate;
+                                
+                                // Get weather data using the coordinates
+                                getweather(lat, lon, timezone);
+                                getHourlyForecast(lat, lon, timezone);
+                            } else {
+                                document.getElementById('cityName').innerText = 'Location not found';
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            document.getElementById('cityName').innerText = 'Error getting location details';
+                        });
+                },
+                // Error callback
+                (error) => {
+                    console.error("Error getting location:", error);
+                    let errorMessage = 'Unable to get location: ';
+                    switch(error.code) {
+                        case error.PERMISSION_DENIED:
+                            errorMessage += 'Please allow location access';
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            errorMessage += 'Position unavailable';
+                            break;
+                        case error.TIMEOUT:
+                            errorMessage += 'Request timed out';
+                            break;
+                        default:
+                            errorMessage += 'Unknown error';
+                    }
+                    document.getElementById('cityName').innerText = errorMessage;
+                },
+                // Options
+                {
+                    maximumAge: 0,
+                    timeout: 5000,
+                    enableHighAccuracy: true
+                }
+            );
+        } else {
+            document.getElementById('cityName').innerText = 'Geolocation not supported';
+        }
+    }
+
+    //--------------------------------------------------------------------------------------------------------------------------------------
   // Search input event listener
   document.getElementById('citySearch').addEventListener('keypress', function(e) {
     if (e.key === 'Enter') {
         searchCity(this.value);
     }
 });
+//-------------------------------------------------------------------------------------------------------------------------------------------
+//Current Location event listener
+document.getElementById('currentLocation').addEventListener('click', getCurrentLocation);
