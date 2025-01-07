@@ -16,14 +16,13 @@ function calculateTime(timezone) {
     let options = {
         timeZone: timezone,
         hour12: false,
-        hour: "numeric",
-        minute: "numeric",
-      
+        hour: "2-digit",
+        minute: "2-digit",
     }
-    let time = Intl.DateTimeFormat( 'default',options).format(date);
+    let time = Intl.DateTimeFormat( 'en-US',options).format(date);
     //console.log(time);
     timeAndDate.push(time);
-    let currentDate=Intl.DateTimeFormat('default', {timeZone:timezone,weekday:"long",day:"numeric", month:"short"}).format(date)
+    let currentDate=Intl.DateTimeFormat('en-US', {timeZone:timezone,weekday:"long",day:"numeric", month:"short"}).format(date)
    // console.log(currentDate);
     timeAndDate.push(currentDate);
     return timeAndDate;
@@ -99,6 +98,7 @@ function calculateTime(timezone) {
   //----------------------------------------------------------------------------------------------------------------------------------------
 
 // Graphs
+// Enhanced chart theme function
 function getgraph(hourlyValueHolder) {
     const ctx = document.getElementById('myChart').getContext('2d');
     
@@ -117,6 +117,18 @@ function getgraph(hourlyValueHolder) {
         windspeedlabel.push(data.windspeed);
     });
 
+    // Get current theme
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+
+    // Theme-specific colors
+    const colors = {
+        backgroundColor: isDark ? '#333333' : '#ffffff',
+        gridColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+        textColor: isDark ? '#ffffff' : '#333333',
+        temperatureBarColor: isDark ? 'rgb(255, 99, 132)' : 'rgb(60,60,60)',
+        windspeedLineColor: isDark ? 'rgb(255,255,255)' : 'rgb(255, 99, 132)'
+    };
+
     let dataGraph = {
         labels: timelabel,
         datasets: [
@@ -124,55 +136,82 @@ function getgraph(hourlyValueHolder) {
                 label: "Windspeed",
                 data: windspeedlabel,
                 type: 'line',
-                borderColor: "rgb(255, 99, 132)",
+                borderColor: colors.windspeedLineColor,
+                borderWidth: 2,
                 tension: 0.1,
                 yAxisID: 'y'
             },
             {
                 label: "Temperature",
-               
                 data: templabel,
                 type: 'bar',
-                backgroundColor:" rgb(60,60,60) ",
+                backgroundColor: colors.temperatureBarColor,
                 yAxisID: 'y1'
             }
         ]
     };
+
     // Store chart instance globally
     window.myChartInstance = new Chart(ctx, {
         type: "line",
         data: dataGraph,
         options: {
             responsive: true,
+            plugins: {
+                legend: {
+                    labels: {
+                        color: colors.textColor
+                    }
+                }
+            },
             scales: {
                 y: {
                     type: 'linear',
                     display: true,
                     position: 'left',
+                    grid: {
+                        color: colors.gridColor
+                    },
+                    ticks: {
+                        color: colors.textColor
+                    },
                     title: {
                         display: true,
-                          text: 'Windspeed (km/h)'
-                      
+                        text: 'Windspeed (km/h)',
+                        color: colors.textColor
                     }
                 },
                 y1: {
                     type: 'linear',
                     display: true,
                     position: 'right',
+                    grid: {
+                        drawOnChartArea: false,
+                        color: colors.gridColor
+                    },
+                    ticks: {
+                        color: colors.textColor
+                    },
                     title: {
                         display: true,
-                          text: 'Temperature (°C)'
-                      
-                    },
+                        text: 'Temperature (°C)',
+                        color: colors.textColor
+                    }
+                },
+                x: {
                     grid: {
-                        drawOnChartArea: false
+                        color: colors.gridColor
+                    },
+                    ticks: {
+                        color: colors.textColor
                     }
                 }
             }
         }
     });
-
 }
+
+
 
 //-------------------------------------------------------------------------------------------------------------------------------------------
  //Calculating hourly forecast
@@ -382,3 +421,88 @@ fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${cityName}&limit=${limit}
 //-------------------------------------------------------------------------------------------------------------------------------------------
 //Current Location event listener
 document.getElementById('currentLocation').addEventListener('click', getCurrentLocation);
+// ----------------------------------------------------------------------------------------------------------------------------------------
+//Dark Theme 
+// Get the theme toggle checkbox
+const themeToggle = document.getElementById('checkbox');
+
+// Function to set theme
+function setTheme(isDark) {
+    // Set the theme attribute on root element
+    document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+    
+    // Update checkbox state
+    themeToggle.checked = isDark;
+    
+    // Save preference
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    
+    // Update chart if it exists
+    if (window.myChartInstance) {
+        // Update chart colors
+        Chart.defaults.color = isDark ? '#ffffff' : '#333333';
+        window.myChartInstance.data.datasets[1].backgroundColor = isDark ? '#666666' : 'rgb(60,60,60)';
+        window.myChartInstance.update();
+    }
+
+
+    document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+    themeToggle.checked = isDark;
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+
+    // Add CSS for hourly forecast items in dark mode
+    const style = document.createElement('style');
+    if (isDark) {
+        style.textContent = `
+            .hour-item {
+                background-color: #444444 !important;
+                color: #ffffff !important;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+            }
+        `;
+    } else {
+        style.textContent = `
+            .hour-item {
+                background-color: var(--hover-color);
+                color: var(--text-color);
+                border: none;
+            }
+        `;
+    }
+
+    // Remove any previously added style
+    const oldStyle = document.getElementById('theme-specific-styles');
+    if (oldStyle) {
+        oldStyle.remove();
+    }
+    style.id = 'theme-specific-styles';
+    document.head.appendChild(style);
+
+    // Update chart if it exists
+    if (window.myChartInstance) {
+        // Redraw the chart with current data but new theme
+        const currentData = window.myChartInstance.data.datasets[1].data;
+        const hourlyData = currentData.map((temp, index) => ({
+            time: window.myChartInstance.data.labels[index],
+            temp: temp,
+            windspeed: window.myChartInstance.data.datasets[0].data[index]
+        }));
+        getgraph(hourlyData);
+    }
+}
+
+// Initialize theme
+function initTheme() {
+    // Check saved preference or use system preference
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    
+    // Set initial theme
+    setTheme(savedTheme === 'dark' || (!savedTheme && prefersDark));
+}
+
+// Listen for toggle changes
+themeToggle.addEventListener('change', (e) => setTheme(e.target.checked));
+
+// Initialize when page loads
+document.addEventListener('DOMContentLoaded', initTheme);
