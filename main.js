@@ -31,7 +31,7 @@ function calculateTime(timezone) {
 
   //Fetching weather information
  function getweather(lat,lon,timezone){
-  fetch(`http://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apikey}`)
+  fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apikey}`)
   .then(response => response.json())
   .catch((error) => {
       console.error('Error:', error);
@@ -221,7 +221,7 @@ function getgraph(hourlyValueHolder) {
     // Initialize array outside fetch
     let hourlyValueHolder = [];
 
-    fetch(`http://api.tomorrow.io/v4/timelines?location=${lat},${lon}&fields=temperature,humidity,windSpeed,precipitationProbability&timesteps=1h&units=metric&apikey=${TomorrowapiKey}`)
+    fetch(`https://api.tomorrow.io/v4/timelines?location=${lat},${lon}&fields=temperature,humidity,windSpeed,precipitationProbability&timesteps=1h&units=metric&apikey=${TomorrowapiKey}`)
         .then(response => response.json())
         .then((data) => {
             console.log("hourly data");
@@ -287,7 +287,7 @@ function getgraph(hourlyValueHolder) {
 
 
   function searchCity(cityName) {
-fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${cityName}&limit=${limit}&appid=${apikey}`)
+fetch(`https://api.openweathermap.org/geo/1.0/direct?q=${cityName}&limit=${limit}&appid=${apikey}`)
     .then(response => response.json())
     .then((data) => {
         lat = data[0].lat;  
@@ -346,7 +346,7 @@ fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${cityName}&limit=${limit}
                     lon = position.coords.longitude;
                     
                     // Use the reverse geocoding API
-                    fetch(`http://api.geoapify.com/v1/geocode/reverse?lat=${lat}&lon=${lon}&format=json&apiKey=${api2}`)
+                    fetch(`https://api.geoapify.com/v1/geocode/reverse?lat=${lat}&lon=${lon}&format=json&apiKey=${api2}`)
                         .then(resp => resp.json())
                         .then((result) => {
                             if (result.results && result.results.length > 0) {
