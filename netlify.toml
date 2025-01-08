@@ -1,0 +1,9 @@
+[
+    build
+    
+]
+  command = """
+    sed -i "s|your_openweather_api_key_here|${WEATHER_API_KEY}|g" env.js &&
+    sed -i "s|your_geoapify_api_key_here|${SECOND_API_KEY}|g" env.js &&
+    sed -i "s|your_tomorrow_api_key_here|${TOMORROW_API_KEY}|g" env.js
+  """
