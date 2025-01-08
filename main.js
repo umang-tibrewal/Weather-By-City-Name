@@ -5,9 +5,9 @@ let limit = 1;
 let lat ;
 let lon ;
 
-let apikey = config.WEATHER_API_KEY
-let api2 = config.SECOND_API_KEY  
-let TomorrowapiKey = config.TOMORROW_API_KEY
+let apikey = process.env.WEATHER_API_KEY
+let api2 = process.env.SECOND_API_KEY  
+let TomorrowapiKey = process.env.TOMORROW_API_KEY
 let timezone
  //Calculating Time
 function calculateTime(timezone) {
@@ -506,3 +506,9 @@ themeToggle.addEventListener('change', (e) => setTheme(e.target.checked));
 
 // Initialize when page loads
 document.addEventListener('DOMContentLoaded', initTheme);
+
+// On stating of Script Current Location is called
+document.addEventListener('DOMContentLoaded', () => {
+   
+    getCurrentLocation();  // Get current location automatically
+});

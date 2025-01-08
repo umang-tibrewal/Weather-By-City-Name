@@ -17,7 +17,7 @@
 
 [data-theme="dark"] {
     --bg-color: #1a1a1a;
-    --card-bg: #333333;
+    --card-bg: #36454F;
     --text-color: #ffffff;
     --border-color: #404040;
     --hover-color: #404040;
@@ -133,6 +133,7 @@ input:checked + .slider:before {
     border: none;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    border-radius: 25px;
 }
 
 .location-btn:hover {
