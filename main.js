@@ -1,5 +1,4 @@
 
-import config from './config.js';
 let cityName = '';
 let limit = 1;
 let lat ;
