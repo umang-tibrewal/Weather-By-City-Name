@@ -4,9 +4,9 @@ let limit = 1;
 let lat ;
 let lon ;
 
-let apikey = process.env.WEATHER_API_KEY
-let api2 = process.env.SECOND_API_KEY  
-let TomorrowapiKey = process.env.TOMORROW_API_KEY
+let apikey = window.env.WEATHER_API_KEY
+let api2 = window.env.SECOND_API_KEY  
+let TomorrowapiKey = window.env.TOMORROW_API_KEY
 let timezone
  //Calculating Time
 function calculateTime(timezone) {
