@@ -3,7 +3,7 @@
 ### Language used -HTML CSS JavaScript
 ###  Real-time weather data display for searched cities
 ### Current local time for each location
-###  Hourly weather forecast with 24-hour breakdown
+###  Hourly weather forecast 
 ###  Temperature, pressure, humidity, wind speed metrics
 ###  Interactive weather visualization graph
 ###  Toggle between light/dark theme modes
